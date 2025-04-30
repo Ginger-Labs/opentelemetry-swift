@@ -9,7 +9,6 @@ Pod::Spec.new do |spec|
   spec.authors = "OpenTelemetry Authors"
 
   spec.source = { :git => "https://github.com/open-telemetry/opentelemetry-swift.git", :tag => spec.version.to_s }
-  spec.source_files = "Sources/OpenTelemetryApi/**/*.swift"
 
   spec.swift_version = "5.10"
   spec.ios.deployment_target = "13.0"
@@ -21,4 +20,41 @@ Pod::Spec.new do |spec|
   # To provide the correct values to the flags `-package-name` and `-module-name` we checked out the outputs from:
   # `swift build --verbose`
   spec.pod_target_xcconfig = { "OTHER_SWIFT_FLAGS" => "-module-name OpenTelemetryApi -package-name opentelemetry_swift" }
+
+  spec.subspec 'Core' do |s|
+    s.source_files = ['Sources/OpenTelemetryApi/*.swift', 'Sources/OpenTelemetryApi/Common/**/*.swift', 'Sources/OpenTelemetryApi/Internal/**/*.swift']
+  end
+
+  spec.subspec 'Baggage' do |s|
+    s.dependency 'OpenTelemetry-Swift-Api/Core'
+    s.dependency 'OpenTelemetry-Swift-Api/Context'
+    s.source_files = 'Sources/OpenTelemetryApi/Baggage/**/*.swift'
+  end
+
+  spec.subspec 'Context' do |s|
+    s.dependency 'OpenTelemetry-Swift-Api/Core'
+    s.source_files = 'Sources/OpenTelemetryApi/Context/**/*.swift'
+  end
+
+  spec.subspec 'Logs' do |s|
+    s.dependency 'OpenTelemetry-Swift-Api/Core'
+    s.source_files = 'Sources/OpenTelemetryApi/Logs/**/*.swift'
+  end
+
+  spec.subspec 'Metrics' do |s|
+    s.dependency 'OpenTelemetry-Swift-Api/Core'
+    s.source_files = 'Sources/OpenTelemetryApi/Metrics/**/*.swift'
+  end
+
+  spec.subspec 'Propagation' do |s|
+    s.dependency 'OpenTelemetry-Swift-Api/Core'
+    s.source_files = 'Sources/OpenTelemetryApi/Propagation/**/*.swift'
+  end
+
+  spec.subspec 'Trace' do |s|
+    s.dependency 'OpenTelemetry-Swift-Api/Core'
+    s.dependency 'OpenTelemetry-Swift-Api/Context'
+    s.source_files = 'Sources/OpenTelemetryApi/Trace/**/*.swift'
+  end
+
 end

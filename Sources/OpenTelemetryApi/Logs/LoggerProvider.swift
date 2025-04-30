@@ -18,3 +18,19 @@ public protocol LoggerProvider: AnyObject {
   /// - Returns: LoggerBuilder instance
   func loggerBuilder(instrumentationScopeName: String) -> LoggerBuilder
 }
+
+extension OpenTelemetry {
+
+    public static func registerDefaultLoggerProvider() {
+        self.registerLoggerProvider(loggerProvider: DefaultLoggerProvider.instance)
+    }
+
+    public var loggerProvider: LoggerProvider {
+        return self._loggerProvider as! LoggerProvider
+    }
+
+    public static func registerLoggerProvider(loggerProvider: LoggerProvider) {
+      instance._loggerProvider = loggerProvider
+    }
+
+}

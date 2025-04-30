@@ -17,8 +17,8 @@ Pod::Spec.new do |spec|
   spec.watchos.deployment_target = "6.0"
   spec.module_name = "DataCompression"
 
-  spec.dependency 'OpenTelemetry-Swift-Api', spec.version.to_s
-  spec.dependency 'OpenTelemetry-Swift-Sdk', spec.version.to_s
+  spec.dependency 'OpenTelemetry-Swift-Api/Core', spec.version.to_s
+  spec.dependency 'OpenTelemetry-Swift-Sdk/Core', spec.version.to_s
   spec.pod_target_xcconfig = { "OTHER_SWIFT_FLAGS" => "-module-name DataCompression -package-name opentelemetry_swift_data_compression" }
 
 end

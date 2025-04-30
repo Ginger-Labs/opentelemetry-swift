@@ -16,3 +16,15 @@ public protocol StableMeterProvider: AnyObject {
 
   func meterBuilder(name: String) -> MeterBuilder
 }
+
+extension OpenTelemetry {
+
+    public var stableMeterProvider: StableMeterProvider? {
+        return self._stableMeterProvider as? StableMeterProvider
+    }
+
+    public static func registerStableMeterProvider(meterProvider: StableMeterProvider) {
+      instance._stableMeterProvider = meterProvider
+    }
+
+}

@@ -9,7 +9,6 @@ Pod::Spec.new do |spec|
   spec.authors = "OpenTelemetry Authors"
 
   spec.source = { :git => "https://github.com/open-telemetry/opentelemetry-swift.git", :tag => spec.version.to_s }
-  spec.source_files = "Sources/Exporters/Stdout/*.swift"
 
   spec.swift_version = "5.10"
   spec.ios.deployment_target = "13.0"
@@ -17,8 +16,24 @@ Pod::Spec.new do |spec|
   spec.watchos.deployment_target = "6.0"
   spec.module_name = "StdoutExporter"
 
-  spec.dependency 'OpenTelemetry-Swift-Api', spec.version.to_s
-  spec.dependency 'OpenTelemetry-Swift-Sdk', spec.version.to_s
   spec.pod_target_xcconfig = { "OTHER_SWIFT_FLAGS" => "-module-name StdoutExporter -package-name opentelemetry_swift_stdout_exporter" }
+
+  spec.subspec 'Logs' do |s|
+    s.dependency 'OpenTelemetry-Swift-Api/Logs'
+    s.dependency 'OpenTelemetry-Swift-Sdk/Logs'
+    s.source_files = 'Sources/Exporters/Stdout/StdoutLogExporter.swift'
+  end
+
+  spec.subspec 'Metrics' do |s|
+    s.dependency 'OpenTelemetry-Swift-Api/Metrics'
+    s.dependency 'OpenTelemetry-Swift-Sdk/Metrics'
+    s.source_files = 'Sources/Exporters/Stdout/StdoutMetricExporter.swift'
+  end
+
+  spec.subspec 'Trace' do |s|
+    s.dependency 'OpenTelemetry-Swift-Api/Trace'
+    s.dependency 'OpenTelemetry-Swift-Sdk/Trace'
+    s.source_files = 'Sources/Exporters/Stdout/StdoutSpanExporter.swift'
+  end
 
 end

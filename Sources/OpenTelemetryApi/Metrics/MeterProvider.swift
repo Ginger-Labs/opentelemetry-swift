@@ -19,3 +19,20 @@ public protocol MeterProvider: AnyObject {
   /// @available(*, deprecated, renamed: "StableMeterProvider.get(name:version:schema_url:)")
   func get(instrumentationName: String, instrumentationVersion: String?) -> Meter
 }
+
+extension OpenTelemetry {
+
+    public static func registerDefaultMeterProvider() {
+        self.registerMeterProvider(meterProvider: DefaultMeterProvider.instance)
+    }
+
+    public var meterProvider: MeterProvider {
+        return self._meterProvider as! MeterProvider
+    }
+
+    @available(*, deprecated, message: "Use registerStableMeterProvider instead.")
+    public static func registerMeterProvider(meterProvider: MeterProvider) {
+      instance._meterProvider = meterProvider
+    }
+
+}

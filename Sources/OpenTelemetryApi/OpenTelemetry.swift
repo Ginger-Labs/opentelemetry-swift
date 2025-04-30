@@ -18,45 +18,29 @@ public struct OpenTelemetry {
   public static var instance = OpenTelemetry()
 
   /// Registered tracerProvider or default via DefaultTracerProvider.instance.
-  public private(set) var tracerProvider: TracerProvider
+  var _tracerProvider: Any?
 
   /// Registered MeterProvider or default via DefaultMeterProvider.instance.
-  public private(set) var meterProvider: MeterProvider
+  var _meterProvider: Any?
 
-  public private(set) var stableMeterProvider: StableMeterProvider?
+  var _stableMeterProvider: Any?
 
   /// Registered LoggerProvider or default via DefaultLoggerProvider.instance.
-  public private(set) var loggerProvider: LoggerProvider
+  var _loggerProvider: Any?
 
   /// registered manager or default via  DefaultBaggageManager.instance.
-  public private(set) var baggageManager: BaggageManager
+  var _baggageManager: Any?
 
-  /// registered manager or default via  DefaultBaggageManager.instance.
-  public private(set) var propagators: ContextPropagators =
-    DefaultContextPropagators(textPropagators: [W3CTraceContextPropagator()],
-                              baggagePropagator: W3CBaggagePropagator())
+  /// registered manager or default
+  var _propagators: Any?
 
-  /// registered manager or default via  DefaultBaggageManager.instance.
-  public private(set) var contextProvider: OpenTelemetryContextProvider
+  /// registered manager or default
+  var _contextProvider: Any?
 
   /// Allow customizing how warnings and informative messages about usages of OpenTelemetry are relayed back to the developer.
   public private(set) var feedbackHandler: ((String) -> Void)?
 
   private init() {
-    stableMeterProvider = nil
-    tracerProvider = DefaultTracerProvider.instance
-    meterProvider = DefaultMeterProvider.instance
-    loggerProvider = DefaultLoggerProvider.instance
-    baggageManager = DefaultBaggageManager.instance
-    #if canImport(os.activity)
-      let manager = ActivityContextManager.instance
-    #elseif canImport(_Concurrency)
-      let manager = TaskLocalContextManager.instance
-    #else
-      #error("No default ContextManager is supported on the target platform")
-    #endif
-    contextProvider = OpenTelemetryContextProvider(contextManager: manager)
-
     #if canImport(os.log)
       feedbackHandler = { message in
         os_log("%{public}s", message)
@@ -64,54 +48,10 @@ public struct OpenTelemetry {
     #endif
   }
 
-  public static func registerStableMeterProvider(
-    meterProvider: StableMeterProvider
-  ) {
-    instance.stableMeterProvider = meterProvider
-  }
-
-  public static func registerTracerProvider(tracerProvider: TracerProvider) {
-    instance.tracerProvider = tracerProvider
-  }
-
-  @available(*, deprecated, message: "Use registerStableMeterProvider instead.")
-  public static func registerMeterProvider(meterProvider: MeterProvider) {
-    instance.meterProvider = meterProvider
-  }
-
-  public static func registerLoggerProvider(loggerProvider: LoggerProvider) {
-    instance.loggerProvider = loggerProvider
-  }
-
-  public static func registerBaggageManager(baggageManager: BaggageManager) {
-    instance.baggageManager = baggageManager
-  }
-
-  public static func registerPropagators(textPropagators: [TextMapPropagator],
-                                         baggagePropagator: TextMapBaggagePropagator) {
-    instance.propagators = DefaultContextPropagators(textPropagators: textPropagators, baggagePropagator: baggagePropagator)
-  }
-
-  public static func registerContextManager(contextManager: ContextManager) {
-    instance.contextProvider.contextManager = contextManager
-  }
-
   /// Register a function to be called when the library has warnings or informative messages to relay back to the developer
   public static func registerFeedbackHandler(
     _ handler: @escaping (String) -> Void
   ) {
     instance.feedbackHandler = handler
-  }
-
-  /// A utility method for testing which sets the context manager for the duration of the closure, and then reverts it before the method returns
-  static func withContextManager<T>(_ manager: ContextManager, _ operation: () throws -> T) rethrows -> T {
-    let old = instance.contextProvider.contextManager
-    defer {
-      self.registerContextManager(contextManager: old)
-    }
-
-    registerContextManager(contextManager: manager)
-
-    return try operation()
   }
 }

@@ -34,3 +34,19 @@ public extension TracerProvider {
     )
   }
 }
+
+extension OpenTelemetry {
+
+    public static func registerDefaultTracerProvider() {
+        self.registerTracerProvider(tracerProvider: DefaultTracerProvider.instance)
+    }
+
+    public var tracerProvider: TracerProvider {
+        return self._tracerProvider as! TracerProvider
+    }
+
+    public static func registerTracerProvider(tracerProvider: TracerProvider) {
+      instance._tracerProvider = tracerProvider
+    }
+
+}
