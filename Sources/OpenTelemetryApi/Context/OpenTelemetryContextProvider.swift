@@ -32,10 +32,10 @@ extension OpenTelemetry {
         _contextProvider as! OpenTelemetryContextProvider
     }
 
-//    public mutating func registerContextManager(contextManager: ContextManager) {
-//      var contextProvider = self._contextProvider as! OpenTelemetryContextProvider
-//      contextProvider.contextManager = contextManager
-//    }
+    public mutating func registerContextManager(contextManager: ContextManager) {
+      var contextProvider = self._contextProvider as! OpenTelemetryContextProvider
+      contextProvider.contextManager = contextManager
+    }
 
     /// A utility method for testing which sets the context manager for the duration of the closure, and then reverts it before the method returns
     mutating func withContextManager<T>(_ manager: ContextManager, _ operation: () throws -> T) rethrows -> T {
