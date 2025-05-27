@@ -42,4 +42,9 @@ Pod::Spec.new do |spec|
     s.source_files = 'Sources/OpenTelemetrySdk/TraceMetrics/**/*.swift'
   end
 
+  spec.subspec 'Notability' do |s|
+    s.dependency 'OpenTelemetry-Swift-Sdk/Logs'
+    s.dependency 'OpenTelemetry-Swift-Sdk/Trace'
+  end
+
 end

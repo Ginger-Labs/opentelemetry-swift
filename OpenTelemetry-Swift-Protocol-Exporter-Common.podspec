@@ -51,4 +51,9 @@ Pod::Spec.new do |spec|
       s.source_files = 'Sources/Exporters/OpenTelemetryProtocolCommon/exportermetrics/*.swift'
   end
 
+  spec.subspec 'Notability' do |s|
+    s.dependency 'OpenTelemetry-Swift-Protocol-Exporter-Common/Logs'
+    s.dependency 'OpenTelemetry-Swift-Protocol-Exporter-Common/Trace'
+  end
+
 end

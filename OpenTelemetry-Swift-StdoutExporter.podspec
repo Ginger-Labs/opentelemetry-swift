@@ -36,4 +36,9 @@ Pod::Spec.new do |spec|
     s.source_files = 'Sources/Exporters/Stdout/StdoutSpanExporter.swift'
   end
 
+  spec.subspec 'Notability' do |s|
+    s.dependency 'OpenTelemetry-Swift-StdoutExporter/Logs'
+    s.dependency 'OpenTelemetry-Swift-StdoutExporter/Trace'
+  end
+
 end
