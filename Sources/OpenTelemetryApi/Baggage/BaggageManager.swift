@@ -16,3 +16,19 @@ public protocol BaggageManager: AnyObject {
   /// Returns a new ContextBuilder.
   func baggageBuilder() -> BaggageBuilder
 }
+
+extension OpenTelemetry {
+
+    public static func registerDefaultBaggageManager() {
+        self.registerBaggageManager(baggageManager: DefaultBaggageManager.instance)
+    }
+
+    public var baggageManager: BaggageManager {
+        return self._baggageManager as! BaggageManager
+    }
+
+    public static func registerBaggageManager(baggageManager: BaggageManager) {
+      instance._baggageManager = baggageManager
+    }
+
+}

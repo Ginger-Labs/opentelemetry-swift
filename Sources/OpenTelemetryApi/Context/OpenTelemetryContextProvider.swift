@@ -13,60 +13,41 @@ public enum OpenTelemetryContextKeys: String {
 
 public struct OpenTelemetryContextProvider {
   package var contextManager: ContextManager
+}
 
-  /// Returns the Span from the current context
-  public var activeSpan: Span? {
-    return contextManager.getCurrentContextValue(forKey: .span) as? Span
-  }
+extension OpenTelemetry {
 
-  /// Returns the Baggage from the current context
-  public var activeBaggage: Baggage? {
-    return contextManager.getCurrentContextValue(forKey: OpenTelemetryContextKeys.baggage) as? Baggage
-  }
-
-  /// Sets the span as the activeSpan for the current context
-  /// - Parameter span: the Span to be set to the current context
-  public func setActiveSpan(_ span: Span) {
-    contextManager.setCurrentContextValue(forKey: OpenTelemetryContextKeys.span, value: span)
-  }
-
-  /// Sets the span as the activeSpan for the current context
-  /// - Parameter baggage: the Correlation Context to be set to the current context
-  public func setActiveBaggage(_ baggage: Baggage) {
-    contextManager.setCurrentContextValue(forKey: OpenTelemetryContextKeys.baggage, value: baggage)
-  }
-
-  public func removeContextForSpan(_ span: Span) {
-    contextManager.removeContextValue(forKey: OpenTelemetryContextKeys.span, value: span)
-  }
-
-  public func removeContextForBaggage(_ baggage: Baggage) {
-    contextManager.removeContextValue(forKey: OpenTelemetryContextKeys.baggage, value: baggage)
-  }
-
-  /// Sets `span` as the active span for the duration of the given closure.
-  /// While the span will no longer be active after the closure exits, this method does **not** end the span.
-  /// Prefer `SpanBuilderBase.withActiveSpan` which handles starting, activating, and ending the span.
-  public func withActiveSpan<T>(_ span: SpanBase, _ operation: () throws -> T) rethrows -> T {
-    try contextManager.withCurrentContextValue(forKey: .span, value: span, operation)
-  }
-
-  public func withActiveBaggage<T>(_ span: Baggage, _ operation: () throws -> T) rethrows -> T {
-    try contextManager.withCurrentContextValue(forKey: .baggage, value: span, operation)
-  }
-
-  #if canImport(_Concurrency)
-    /// Sets `span` as the active span for the duration of the given closure.
-    /// While the span will no longer be active after the closure exits, this method does **not** end the span.
-    /// Prefer `SpanBuilderBase.withActiveSpan` which handles starting, activating, and ending the span.
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    public func withActiveSpan<T>(_ span: SpanBase, _ operation: () async throws -> T) async rethrows -> T {
-      try await contextManager.withCurrentContextValue(forKey: .span, value: span, operation)
+    public static func registerDefaultContextProvider() {
+        #if canImport(os.activity)
+          let manager = ActivityContextManager.instance
+        #elseif canImport(_Concurrency)
+          let manager = TaskLocalContextManager.instance
+        #else
+          #error("No default ContextManager is supported on the target platform")
+        #endif
+        instance._contextProvider = OpenTelemetryContextProvider(contextManager: manager)
     }
 
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    public func withActiveBaggage<T>(_ span: Baggage, _ operation: () async throws -> T) async rethrows -> T {
-      try await contextManager.withCurrentContextValue(forKey: .baggage, value: span, operation)
+    public var contextProvider: OpenTelemetryContextProvider {
+        _contextProvider as! OpenTelemetryContextProvider
     }
-  #endif
+
+    public mutating func registerContextManager(contextManager: ContextManager) {
+      var contextProvider = self._contextProvider as! OpenTelemetryContextProvider
+      contextProvider.contextManager = contextManager
+    }
+
+    /// A utility method for testing which sets the context manager for the duration of the closure, and then reverts it before the method returns
+    mutating func withContextManager<T>(_ manager: ContextManager, _ operation: () throws -> T) rethrows -> T {
+      var contextProvider = self._contextProvider as! OpenTelemetryContextProvider
+      let old = contextProvider.contextManager
+      defer {
+        contextProvider.contextManager = old
+      }
+
+      contextProvider.contextManager = manager
+
+      return try operation()
+    }
+
 }

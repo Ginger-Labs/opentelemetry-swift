@@ -8,7 +8,7 @@ import OpenTelemetryApi
 /// `ExporterMetrics` will provide a way to track how many data have been seen or successfully exported,
 /// as well as how many failed. The exporter will adopt an instance of this and inject the provider as a dependency.
 /// The host application can then track different types of exporters, such as `http, grpc, and log`
-public class ExporterMetrics {
+public class ExporterMetrics: IExporterMetrics {
   public enum TransporterType: String {
     case grpc
     case protoBuf = "http"
