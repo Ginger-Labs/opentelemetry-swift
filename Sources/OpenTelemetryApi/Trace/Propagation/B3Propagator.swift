@@ -60,7 +60,7 @@ public class B3Propagator: TextMapPropagator {
       spanContext = getSpanContextFromMultipleHeaders(carrier: carrier, getter: getter)
     }
     if spanContext == nil {
-      print("Invalid SpanId in B3 header. Returning no span context.")
+        OpenTelemetry.instance.feedbackHandler?("Invalid SpanId in B3 header. Returning no span context.")
     }
 
     return spanContext

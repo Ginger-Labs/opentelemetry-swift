@@ -40,7 +40,7 @@ public class TracerProviderSdk: TracerProvider {
     var instrumentationName = instrumentationName
     if instrumentationName.isEmpty {
       // Per the spec, empty is "invalid"
-      print("Tracer requested without instrumentation name.")
+      OpenTelemetry.instance.feedbackHandler?("Tracer requested without instrumentation name.")
       instrumentationName = TracerProviderSdk.emptyName
     }
     let instrumentationScopeInfo = InstrumentationScopeInfo(
