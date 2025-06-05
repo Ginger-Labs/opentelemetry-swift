@@ -25,15 +25,19 @@ Pod::Spec.new do |spec|
     s.source_files = ['Sources/OpenTelemetryApi/*.swift', 'Sources/OpenTelemetryApi/Common/**/*.swift', 'Sources/OpenTelemetryApi/Internal/**/*.swift']
   end
 
-  spec.subspec 'Baggage' do |s|
+  spec.subspec 'Context' do |s|
     s.dependency 'OpenTelemetry-Swift-Api/Core'
+    s.source_files = 'Sources/OpenTelemetryApi/Context/**/*.swift'
+  end
+
+  spec.subspec 'Baggage' do |s|
     s.dependency 'OpenTelemetry-Swift-Api/Context'
     s.source_files = 'Sources/OpenTelemetryApi/Baggage/**/*.swift'
   end
 
-  spec.subspec 'Context' do |s|
-    s.dependency 'OpenTelemetry-Swift-Api/Core'
-    s.source_files = 'Sources/OpenTelemetryApi/Context/**/*.swift'
+  spec.subspec 'Propagation' do |s|
+    s.dependency 'OpenTelemetry-Swift-Api/Baggage'
+    s.source_files = 'Sources/OpenTelemetryApi/Propagation/**/*.swift'
   end
 
   spec.subspec 'Logs' do |s|
@@ -44,11 +48,6 @@ Pod::Spec.new do |spec|
   spec.subspec 'Metrics' do |s|
     s.dependency 'OpenTelemetry-Swift-Api/Core'
     s.source_files = 'Sources/OpenTelemetryApi/Metrics/**/*.swift'
-  end
-
-  spec.subspec 'Propagation' do |s|
-    s.dependency 'OpenTelemetry-Swift-Api/Core'
-    s.source_files = 'Sources/OpenTelemetryApi/Propagation/**/*.swift'
   end
 
   spec.subspec 'Trace' do |s|
