@@ -53,9 +53,9 @@ public class URLSessionInstrumentation {
     return spans
   }
 
-  public init(configuration: URLSessionInstrumentationConfiguration) {
+  public init(configuration: URLSessionInstrumentationConfiguration, tracerProvider: TracerProvider) {
     self.configuration = configuration
-    tracer = OpenTelemetry.instance.tracerProvider.get(instrumentationName: "NSURLSession", instrumentationVersion: "0.0.1")
+    tracer = tracerProvider.get(instrumentationName: "NSURLSession", instrumentationVersion: "0.0.1")
     injectInNSURLClasses()
   }
 
