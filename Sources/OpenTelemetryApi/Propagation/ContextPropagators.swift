@@ -16,8 +16,8 @@ extension OpenTelemetry {
         self.registerPropagators(textPropagators: [W3CTraceContextPropagator()], baggagePropagator: W3CBaggagePropagator())
     }
 
-    public static var propagators: ContextPropagators {
-        instance._propagators as! ContextPropagators
+    public var propagators: ContextPropagators {
+        _propagators as! ContextPropagators
     }
 
     public static func registerPropagators(textPropagators: [TextMapPropagator],
