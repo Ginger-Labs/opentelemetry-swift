@@ -8,6 +8,7 @@
 #endif
 import Foundation
 import SwiftProtobuf
+import OpenTelemetryApi
 import OpenTelemetryProtocolExporterCommon
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -66,7 +67,7 @@ public class OtlpHttpExporterBase {
       // but it doesn't matter here
       request.httpBody = compressedData
     } catch {
-      print("Error serializing body: \(error)")
+      OpenTelemetry.instance.feedbackHandler?("Error serializing body: \(error)")
     }
 
     return request
