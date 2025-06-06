@@ -17,7 +17,6 @@ Pod::Spec.new do |spec|
   spec.module_name = "ResourceExtension"
 
   spec.subspec 'NetworkStatus' do |s|
-    s.dependency 'NetworkStatus' # 3rd party
     s.source_files = 'Sources/Instrumentation/NetworkStatus/**/*.swift'
   end
 

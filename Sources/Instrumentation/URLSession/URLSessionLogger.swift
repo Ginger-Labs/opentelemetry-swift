@@ -6,10 +6,6 @@
 import Foundation
 import OpenTelemetryApi
 import OpenTelemetrySdk
-import os.log
-#if os(iOS) && !targetEnvironment(macCatalyst)
-  import NetworkStatus
-#endif // os(iOS) && !targetEnvironment(macCatalyst)
 
 class URLSessionLogger {
   static var runningSpans = [String: Span]()
@@ -21,12 +17,7 @@ class URLSessionLogger {
         let netstats = try NetworkStatus()
         return NetworkStatusInjector(netstat: netstats)
       } catch {
-        if #available(iOS 14, macOS 11, tvOS 14, *) {
-          os_log(.error, "failed to initialize network connection status: %@", error.localizedDescription)
-        } else {
-          NSLog("failed to initialize network connection status: %@", error.localizedDescription)
-        }
-
+        OpenTelemetry.instance.feedbackHandler?("failed to initialize network connection status: \(error.localizedDescription)")
         return nil
       }
     }()
