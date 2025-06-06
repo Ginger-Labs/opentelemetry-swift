@@ -59,6 +59,7 @@ Pod::Spec.new do |spec|
   spec.subspec 'Notability' do |s|
     s.dependency 'OpenTelemetry-Swift-Api/Logs'
     s.dependency 'OpenTelemetry-Swift-Api/Trace'
+    s.dependency 'OpenTelemetry-Swift-Api/Propagation'
   end
 
 end
