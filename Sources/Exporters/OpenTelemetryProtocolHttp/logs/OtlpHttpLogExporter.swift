@@ -32,7 +32,8 @@ public class OtlpHttpLogExporter: OtlpHttpExporterBase, LogRecordExporter {
   }
 
   public func export(logRecords: [OpenTelemetrySdk.ReadableLogRecord],
-                     explicitTimeout: TimeInterval? = nil) -> OpenTelemetrySdk.ExportResult {
+                     explicitTimeout: TimeInterval? = nil,
+                     completion: ((ExportResult) -> Void)?) {
     var sendingLogRecords: [ReadableLogRecord] = []
     exporterLock.withLockVoid {
       pendingLogRecords.append(contentsOf: logRecords)
@@ -63,16 +64,16 @@ public class OtlpHttpLogExporter: OtlpHttpExporterBase, LogRecordExporter {
       switch result {
       case .success:
         self?.exporterMetrics?.addSuccess(value: sendingLogRecords.count)
+        completion?(.success)
       case let .failure(error):
         self?.exporterMetrics?.addFailed(value: sendingLogRecords.count)
         self?.exporterLock.withLockVoid {
           self?.pendingLogRecords.append(contentsOf: sendingLogRecords)
         }
         OpenTelemetry.instance.feedbackHandler?(error.localizedDescription)
+        completion?(.failure)
       }
     }
-
-    return .success
   }
 
   public func forceFlush(explicitTimeout: TimeInterval? = nil) -> ExportResult {

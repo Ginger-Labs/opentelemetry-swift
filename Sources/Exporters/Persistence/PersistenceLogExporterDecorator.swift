@@ -18,9 +18,11 @@ public class PersistenceLogExporterDecorator: LogRecordExporter {
       self.logRecordExporter = logRecordExporter
     }
 
-    func export(values: [ReadableLogRecord]) -> DataExportStatus {
-      let result = logRecordExporter.export(logRecords: values)
-      return DataExportStatus(needsRetry: result == .failure)
+    func export(values: [ReadableLogRecord], completion: @escaping (DataExportStatus) -> Void) {
+      logRecordExporter.export(logRecords: values) { result in
+        let status = DataExportStatus(needsRetry: result == .failure)
+        completion(status)
+      }
     }
   }
 
@@ -39,6 +41,11 @@ public class PersistenceLogExporterDecorator: LogRecordExporter {
       exportCondition: exportCondition,
       performancePreset: performancePreset)
     self.logRecordExporter = logRecordExporter
+  }
+
+  public func export(logRecords: [ReadableLogRecord], explicitTimeout: TimeInterval?, completion: ((ExportResult) -> Void)?) {
+    let result = self.export(logRecords: logRecords, explicitTimeout: explicitTimeout)
+    completion?(result)
   }
 
   public func export(logRecords: [ReadableLogRecord], explicitTimeout: TimeInterval? = nil) -> ExportResult {

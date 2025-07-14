@@ -8,7 +8,7 @@ import Foundation
 // a protocol for an exporter of `Data` to which a `DataExportWorker` can delegate persisted
 // data export
 protocol DataExporter {
-  func export(data: Data) -> DataExportStatus
+  func export(data: Data, completion: @escaping (DataExportStatus) -> Void)
 }
 
 // a protocol needed for mocking `DataExportWorker`
@@ -50,14 +50,16 @@ class DataExportWorker: DataExportWorkerProtocol {
       let nextBatch = isSystemReady ? self.fileReader.readNextBatch() : nil
       if let batch = nextBatch {
         // Export batch
-        let exportStatus = self.dataExporter.export(data: batch.data)
+        self.dataExporter.export(data: batch.data) { [weak self] exportStatus in
+          guard let self else { return }
 
-        // Delete or keep batch depending on the export status
-        if exportStatus.needsRetry {
-          self.delay.increase()
-        } else {
-          self.fileReader.markBatchAsRead(batch)
-          self.delay.decrease()
+          // Delete or keep batch depending on the export status
+          if exportStatus.needsRetry {
+            self.delay.increase()
+          } else {
+            self.fileReader.markBatchAsRead(batch)
+            self.delay.decrease()
+          }
         }
       } else {
         self.delay.increase()
@@ -83,10 +85,12 @@ class DataExportWorker: DataExportWorkerProtocol {
   /// It assures that periodic exporter cannot read or export the files while the flush is being processed
   func flush() -> Bool {
     let success = queue.sync {
-      self.fileReader.onRemainingBatches {
-        let exportStatus = self.dataExporter.export(data: $0.data)
-        if !exportStatus.needsRetry {
-          self.fileReader.markBatchAsRead($0)
+      self.fileReader.onRemainingBatches { batch in
+        self.dataExporter.export(data: batch.data) { [weak self] exportStatus in
+          guard let self else { return }
+          if !exportStatus.needsRetry {
+            self.fileReader.markBatchAsRead(batch)
+          }
         }
       }
     }

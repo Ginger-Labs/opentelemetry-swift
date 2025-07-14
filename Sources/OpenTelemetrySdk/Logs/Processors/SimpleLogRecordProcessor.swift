@@ -13,7 +13,7 @@ public class SimpleLogRecordProcessor: LogRecordProcessor {
   }
 
   public func onEmit(logRecord: ReadableLogRecord) {
-    _ = logRecordExporter.export(logRecords: [logRecord], explicitTimeout: nil)
+    logRecordExporter.export(logRecords: [logRecord], explicitTimeout: nil, completion: nil)
   }
 
   public func forceFlush(explicitTimeout: TimeInterval? = nil) -> ExportResult {

@@ -26,7 +26,7 @@ public struct SimpleSpanProcessor: SpanProcessor {
     let span = span.toSpanData()
     let spanExporterAux = spanExporter
     processorQueue.async {
-      _ = spanExporterAux.export(spans: [span])
+      spanExporterAux.export(spans: [span], completion: nil)
     }
   }
 

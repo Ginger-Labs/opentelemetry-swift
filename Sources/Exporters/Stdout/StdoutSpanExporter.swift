@@ -17,6 +17,11 @@ public class StdoutSpanExporter: SpanExporter {
     self.isDebug = isDebug
   }
 
+  public func export(spans: [SpanData], explicitTimeout: TimeInterval?, completion: ((SpanExporterResultCode) -> Void)?) {
+    let result = self.export(spans: spans, explicitTimeout: explicitTimeout)
+    completion?(result)
+  }
+
   public func export(spans: [SpanData], explicitTimeout: TimeInterval?) -> SpanExporterResultCode {
     let jsonEncoder = JSONEncoder()
     for span in spans {

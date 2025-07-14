@@ -132,7 +132,7 @@ private class BatchWorker: WorkerThread {
     stride(from: 0, to: logRecordList.endIndex, by: maxExportBatchSize).forEach {
       var logRecordToExport = logRecordList[$0 ..< min($0 + maxExportBatchSize, logRecordList.count)].map { $0 }
       willExportCallback?(&logRecordToExport)
-      _ = logRecordExporter.export(logRecords: logRecordToExport, explicitTimeout: explicitTimeout)
+      logRecordExporter.export(logRecords: logRecordToExport, explicitTimeout: explicitTimeout, completion: nil)
     }
   }
 }

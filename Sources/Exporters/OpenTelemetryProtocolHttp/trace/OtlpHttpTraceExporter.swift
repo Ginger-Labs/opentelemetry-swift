@@ -33,8 +33,7 @@ public class OtlpHttpTraceExporter: OtlpHttpExporterBase, SpanExporter {
                envVarHeaders: envVarHeaders)
   }
 
-  public func export(spans: [SpanData], explicitTimeout: TimeInterval? = nil)
-    -> SpanExporterResultCode {
+  public func export(spans: [SpanData], explicitTimeout: TimeInterval? = nil, completion: ((SpanExporterResultCode) -> Void)?) {
     var sendingSpans: [SpanData] = []
     exporterLock.withLockVoid {
       pendingSpans.append(contentsOf: spans)
@@ -63,15 +62,16 @@ public class OtlpHttpTraceExporter: OtlpHttpExporterBase, SpanExporter {
       switch result {
       case .success:
         self?.exporterMetrics?.addSuccess(value: sendingSpans.count)
+        completion?(.success)
       case let .failure(error):
         self?.exporterMetrics?.addFailed(value: sendingSpans.count)
         self?.exporterLock.withLockVoid {
           self?.pendingSpans.append(contentsOf: sendingSpans)
         }
         OpenTelemetry.instance.feedbackHandler?(error.localizedDescription)
+        completion?(.failure)
       }
     }
-    return .success
   }
 
   public func flush(explicitTimeout: TimeInterval? = nil)

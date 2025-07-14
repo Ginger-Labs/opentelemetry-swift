@@ -18,9 +18,9 @@ public class PersistenceMetricExporterDecorator: MetricExporter {
       self.metricExporter = metricExporter
     }
 
-    func export(values: [Metric]) -> DataExportStatus {
+    func export(values: [Metric], completion: @escaping (DataExportStatus) -> Void) {
       let result = metricExporter.export(metrics: values, shouldCancel: nil)
-      return DataExportStatus(needsRetry: result == .failureRetryable)
+      completion(DataExportStatus(needsRetry: result == .failureRetryable))
     }
   }
 

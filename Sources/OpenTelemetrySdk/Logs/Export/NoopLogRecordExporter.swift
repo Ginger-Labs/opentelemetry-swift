@@ -8,8 +8,8 @@ import Foundation
 public class NoopLogRecordExporter: LogRecordExporter {
   public static let instance = NoopLogRecordExporter()
 
-  public func export(logRecords: [ReadableLogRecord], explicitTimeout: TimeInterval? = nil) -> ExportResult {
-    .success
+  public func export(logRecords: [ReadableLogRecord], explicitTimeout: TimeInterval? = nil, completion: ((ExportResult) -> Void)?) {
+    completion?(.success)
   }
 
   public func shutdown(explicitTimeout: TimeInterval? = nil) {}
