@@ -12,7 +12,7 @@ import Foundation
 public protocol SpanExporter: AnyObject {
   /// Called to export sampled Spans.
   /// - Parameter spans: the list of sampled Spans to be exported.
-  @discardableResult func export(spans: [SpanData], explicitTimeout: TimeInterval?) -> SpanExporterResultCode
+  func export(spans: [SpanData], explicitTimeout: TimeInterval?, completion: ((SpanExporterResultCode) -> Void)?)
 
   /// Exports the collection of sampled Spans that have not yet been exported.
   func flush(explicitTimeout: TimeInterval?) -> SpanExporterResultCode
@@ -23,8 +23,8 @@ public protocol SpanExporter: AnyObject {
 }
 
 public extension SpanExporter {
-  func export(spans: [SpanData]) -> SpanExporterResultCode {
-    return export(spans: spans, explicitTimeout: nil)
+  func export(spans: [SpanData], completion: ((SpanExporterResultCode) -> Void)?) {
+    return export(spans: spans, explicitTimeout: nil, completion: completion)
   }
 
   func flush() -> SpanExporterResultCode {

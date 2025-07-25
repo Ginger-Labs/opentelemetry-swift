@@ -13,6 +13,11 @@ class StdoutLogExporter: LogRecordExporter {
     self.isDebug = isDebug
   }
 
+  func export(logRecords: [OpenTelemetrySdk.ReadableLogRecord], explicitTimeout: TimeInterval?, completion: ((OpenTelemetrySdk.ExportResult) -> Void)?) {
+    let result = self.export(logRecords: logRecords, explicitTimeout: explicitTimeout)
+    completion?(result)
+  }
+
   func export(logRecords: [OpenTelemetrySdk.ReadableLogRecord], explicitTimeout: TimeInterval?) -> OpenTelemetrySdk.ExportResult {
     if isDebug {
       for logRecord in logRecords {

@@ -13,6 +13,11 @@ public class InMemoryLogRecordExporter: LogRecordExporter {
     return finishedLogRecords
   }
 
+  public func export(logRecords: [OpenTelemetrySdk.ReadableLogRecord], explicitTimeout: TimeInterval?, completion: ((OpenTelemetrySdk.ExportResult) -> Void)?) {
+    let result = self.export(logRecords: logRecords, explicitTimeout: explicitTimeout)
+    completion?(result)
+  }
+
   public func export(logRecords: [ReadableLogRecord], explicitTimeout: TimeInterval? = nil) -> ExportResult {
     guard isRunning else {
       return .failure

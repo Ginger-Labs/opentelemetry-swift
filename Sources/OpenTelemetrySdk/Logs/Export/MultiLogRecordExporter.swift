@@ -12,12 +12,23 @@ public class MultiLogRecordExporter: LogRecordExporter {
     self.logRecordExporters = logRecordExporters
   }
 
-  public func export(logRecords: [ReadableLogRecord], explicitTimeout: TimeInterval? = nil) -> ExportResult {
-    var result = ExportResult.success
-    logRecordExporters.forEach {
-      result.mergeResultCode(newResultCode: $0.export(logRecords: logRecords, explicitTimeout: explicitTimeout))
-    }
-    return result
+  public func export(logRecords: [ReadableLogRecord], explicitTimeout: TimeInterval?, completion: ((ExportResult) -> Void)?) {
+      Task {
+          var result = ExportResult.success
+          await withTaskGroup { group in
+              logRecordExporters.forEach { exporter in
+                  group.addTask {
+                      let newResult = await withCheckedContinuation { continuation in
+                          exporter.export(logRecords: logRecords, explicitTimeout: explicitTimeout) { result in
+                              continuation.resume(returning: result)
+                          }
+                      }
+                      result.mergeResultCode(newResultCode: newResult)
+                  }
+              }
+          }
+          completion?(result)
+      }
   }
 
   public func shutdown(explicitTimeout: TimeInterval? = nil) {

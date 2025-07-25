@@ -6,7 +6,7 @@
 import Foundation
 
 public protocol LogRecordExporter {
-  func export(logRecords: [ReadableLogRecord], explicitTimeout: TimeInterval?) -> ExportResult
+  func export(logRecords: [ReadableLogRecord], explicitTimeout: TimeInterval?, completion: ((ExportResult) -> Void)?)
 
   /// Shutdown the log exporter
   ///
@@ -18,8 +18,8 @@ public protocol LogRecordExporter {
 }
 
 public extension LogRecordExporter {
-  func export(logRecords: [ReadableLogRecord]) -> ExportResult {
-    return export(logRecords: logRecords, explicitTimeout: nil)
+  func export(logRecords: [ReadableLogRecord], completion: ((ExportResult) -> Void)?) {
+    return export(logRecords: logRecords, explicitTimeout: nil, completion: completion)
   }
 
   func shutdown() {

@@ -18,9 +18,10 @@ public class PersistenceSpanExporterDecorator: SpanExporter {
       self.spanExporter = spanExporter
     }
 
-    func export(values: [SpanData]) -> DataExportStatus {
-      _ = spanExporter.export(spans: values)
-      return DataExportStatus(needsRetry: false)
+    func export(values: [SpanData], completion: @escaping (DataExportStatus) -> Void) {
+      spanExporter.export(spans: values) { _ in
+        completion(DataExportStatus(needsRetry: false))
+      }
     }
   }
 
@@ -41,14 +42,13 @@ public class PersistenceSpanExporterDecorator: SpanExporter {
                                                           performancePreset: performancePreset)
   }
 
-  public func export(spans: [SpanData], explicitTimeout: TimeInterval?)
-    -> SpanExporterResultCode {
+  public func export(spans: [SpanData], explicitTimeout: TimeInterval?, completion: ((OpenTelemetrySdk.SpanExporterResultCode) -> Void)?) {
     do {
       try persistenceExporter.export(values: spans)
 
-      return .success
+      completion?(.success)
     } catch {
-      return .failure
+      completion?(.failure)
     }
   }
 
