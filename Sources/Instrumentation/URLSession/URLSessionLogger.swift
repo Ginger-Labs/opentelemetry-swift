@@ -6,6 +6,7 @@
 import Foundation
 import OpenTelemetryApi
 import OpenTelemetrySdk
+import NetworkStatus
 
 class URLSessionLogger {
   static var runningSpans = [String: Span]()
