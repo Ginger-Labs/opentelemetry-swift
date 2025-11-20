@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
   spec.name = "OpenTelemetry-Swift-PersistenceExporter"
   spec.version = "1.15.0"
-  spec.summary = "Swift OpenTelemetry Standard output Exporter"
+  spec.summary = "Swift OpenTelemetry Persistence Exporter"
 
   spec.homepage = "https://github.com/open-telemetry/opentelemetry-swift"
   spec.documentation_url = "https://opentelemetry.io/docs/languages/swift"
@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   spec.watchos.deployment_target = "6.0"
   spec.module_name = "PersistenceExporter"
 
-  spec.pod_target_xcconfig = { "OTHER_SWIFT_FLAGS" => "-module-name PersistenceExporter -package-name opentelemetry_swift_stdout_exporter" }
+  spec.pod_target_xcconfig = { "OTHER_SWIFT_FLAGS" => "-module-name PersistenceExporter -package-name opentelemetry_swift_persistence_exporter" }
 
   spec.subspec 'Core' do |s|
     s.source_files = ['Sources/Exporters/Persistence/PersistenceExporterDecorator.swift',
