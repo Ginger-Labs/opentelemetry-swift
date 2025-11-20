@@ -211,16 +211,14 @@ private class BatchWorker: WorkerThread {
     stride(from: 0, to: spanList.endIndex, by: maxExportBatchSize).forEach {
       var spansToExport = spanList[$0 ..< min($0 + maxExportBatchSize, spanList.count)].map { $0.toSpanData() }
       willExportCallback?(&spansToExport)
-      spanExporter.export(spans: spansToExport, explicitTimeout: explicitTimeout) { [weak self] result in
-        guard let self else { return }
-        if result == .success {
-          self.cond.lock()
-          self.processedSpansCounter?.add(value: spanList.count, attribute: [
-            BatchSpanProcessor.SPAN_PROCESSOR_TYPE_LABEL: .string(BatchSpanProcessor.SPAN_PROCESSOR_TYPE_VALUE),
-            BatchSpanProcessor.SPAN_PROCESSOR_DROPPED_LABEL: .bool(false)
-          ])
-          self.cond.unlock()
-        }
+      let result = spanExporter.export(spans: spansToExport, explicitTimeout: explicitTimeout)
+      if result == .success {
+        cond.lock()
+        processedSpansCounter?.add(value: spanList.count, attribute: [
+          BatchSpanProcessor.SPAN_PROCESSOR_TYPE_LABEL: .string(BatchSpanProcessor.SPAN_PROCESSOR_TYPE_VALUE),
+          BatchSpanProcessor.SPAN_PROCESSOR_DROPPED_LABEL: .bool(false)
+        ])
+        cond.unlock()
       }
     }
   }
