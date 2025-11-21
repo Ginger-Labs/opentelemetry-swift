@@ -56,6 +56,10 @@ public class URLSessionInstrumentation {
   public init(configuration: URLSessionInstrumentationConfiguration, tracerProvider: TracerProvider) {
     self.configuration = configuration
     tracer = tracerProvider.get(instrumentationName: "NSURLSession", instrumentationVersion: "0.0.1")
+  }
+
+  /// Allow starting instrumentation after initialization
+  public func startNetworkInstrumentation() {
     injectInNSURLClasses()
   }
 
