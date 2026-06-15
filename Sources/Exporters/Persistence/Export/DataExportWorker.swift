@@ -60,12 +60,15 @@ class DataExportWorker: DataExportWorkerProtocol {
             self.fileReader.markBatchAsRead(batch)
             self.delay.decrease()
           }
+
+          // Reschedule only after this export completes — avoids re-reading the
+          // in-flight file which may lead to sending duplicates to the collector
+          self.scheduleNextExport(after: self.delay.current)
         }
       } else {
         self.delay.increase()
+        self.scheduleNextExport(after: self.delay.current)
       }
-
-      scheduleNextExport(after: self.delay.current)
     }
 
     self.exportWork = exportWork
