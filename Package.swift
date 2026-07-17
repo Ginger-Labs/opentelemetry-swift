@@ -21,15 +21,13 @@ let package = Package(name: "opentelemetry-swift",
                       ],
                       dependencies: [
                         .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.20.2"),
-                        .package(url: "https://github.com/apple/swift-log.git", from: "1.4.4"),
-                        .package(url: "https://github.com/apple/swift-atomics.git", from: "1.2.0")
+                        .package(url: "https://github.com/apple/swift-log.git", from: "1.4.4")
                       ],
                       targets: [
                         .target(name: "OpenTelemetryApi",
                                 dependencies: []),
                         .target(name: "OpenTelemetrySdk",
-                                dependencies: ["OpenTelemetryApi",
-                                               .product(name: "Atomics", package: "swift-atomics", condition: .when(platforms: [.linux]))]),
+                                dependencies: ["OpenTelemetryApi"]),
                         .target(name: "OpenTelemetryTestUtils",
                                 dependencies: ["OpenTelemetryApi", "OpenTelemetrySdk"]),
                         .target(name: "OpenTelemetryProtocolExporterCommon",
